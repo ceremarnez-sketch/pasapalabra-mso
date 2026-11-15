@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}[hidden]{display:none!important}</style>
+<title>Pasapalabra MSO</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Archivo:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: rosco a la izquierda como "set" de plató, panel de pista a la derecha; galería técnica debajo */
+:root{
+ --bg:#e9eef6; --panel:#ffffff; --ink:#152036; --mute:#5a667c; --line:#d3dbe8;
+ --blue:#1f5fd6; --blue-ink:#ffffff; --ok:#1c9a5a; --bad:#d23b3b; --tile:#f3f5f9; --ring:#c7d5f2;
+ --display:"Bricolage Grotesque","Archivo",system-ui,sans-serif; --body:"Archivo",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1424;--panel:#152038;--ink:#e8edf7;--mute:#9aa6bd;--line:#26334f;--blue:#3d7bf0;--ok:#2bb673;--bad:#ef5b5b;--tile:#dfe4ec;--ring:#22345c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1424;--panel:#152038;--ink:#e8edf7;--mute:#9aa6bd;--line:#26334f;--blue:#3d7bf0;--ok:#2bb673;--bad:#ef5b5b;--tile:#dfe4ec;--ring:#22345c;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:1120px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px 24px;margin-bottom:24px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,6vw,58px);line-height:1;margin:0;letter-spacing:-.02em;text-wrap:balance}
+.sub{color:var(--mute);margin:6px 0 0}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
+.stats{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-family:var(--mono);font-size:13px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-variant-numeric:tabular-nums}
+.chip b{font-weight:500}.chip.ok b{color:var(--ok)}.chip.bad b{color:var(--bad)}.chip.time b{color:var(--blue)}
+.game{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:28px;align-items:center}
+@media (max-width:820px){.game{grid-template-columns:1fr}}
+.rosco{position:relative;width:100%;max-width:520px;aspect-ratio:1;margin:0 auto}
+.rosco::before{content:"";position:absolute;inset:7%;border-radius:50%;border:2px dashed var(--ring)}
+.d{position:absolute;width:8.6%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:clamp(12px,2.6vw,20px);background:var(--blue);color:var(--blue-ink);border:0;cursor:pointer;transition:transform .2s,background .2s;box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.d.ok{background:var(--ok)}.d.bad{background:var(--bad)}
+.d.cur{transform:translate(-50%,-50%) scale(1.28);box-shadow:0 0 0 3px var(--bg),0 0 0 6px var(--ink)}
+.d:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.center{position:absolute;inset:22%;border-radius:50%;display:grid;place-items:center;text-align:center;align-content:center;gap:2px}
+.big{font-family:var(--display);font-weight:800;font-size:clamp(64px,15vw,128px);line-height:.9;color:var(--blue)}
+.mode{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;display:grid;gap:16px;min-width:0}
+.clue{font-size:clamp(18px,2.2vw,22px);line-height:1.4;margin:0;font-weight:500;min-height:3.6em}
+form{display:flex;gap:8px;flex-wrap:wrap}
+input{flex:1 1 180px;min-width:0;font:inherit;font-size:18px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+input:focus{outline:none;border-color:var(--blue)}
+button.b{font:inherit;font-weight:700;padding:12px 18px;border-radius:12px;border:0;cursor:pointer}
+.go{background:var(--blue);color:var(--blue-ink)}.skip{background:var(--ink);color:var(--bg)}
+[hidden]{display:none!important}
+.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)!important}
+button.b:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.fb{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;align-items:center;padding:14px;border-radius:14px;background:var(--bg);min-height:96px}
+.fb.noimg{grid-template-columns:1fr}
+.fb .tile{width:120px}
+.fb .res{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+.fb.ok .res{color:var(--ok)}.fb.bad .res{color:var(--bad)}.fb.pass .res{color:var(--mute)}
+.fb .ans{font-family:var(--display);font-weight:800;font-size:24px;line-height:1.1}
+.tile{background:var(--tile);border-radius:12px;padding:6px;aspect-ratio:16/10;display:grid;place-items:center}
+.tile svg{width:100%;height:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.end{display:grid;gap:6px}
+.end h2{font-family:var(--display);margin:0;font-size:30px}
+section{margin-top:56px}
+section h2{font-family:var(--display);font-weight:800;font-size:clamp(26px,4vw,36px);margin:4px 0 4px;letter-spacing:-.01em}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-top:20px}
+.g{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px;display:grid;gap:10px;align-content:start}
+.g figcaption{display:grid;gap:2px;font-size:14px;color:var(--mute)}
+.g b{color:var(--ink);font-size:17px}
+.gl{font-family:var(--mono);font-size:12px;color:var(--blue);letter-spacing:.08em}
+.sol{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px 16px;margin-top:12px;font-size:15px}
+.sol span b{display:inline-block;width:1.6em;color:var(--blue);font-family:var(--display)}
+@media (prefers-reduced-motion:reduce){.d{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+ <div><div class="eyebrow">Iluminación · Conectores · Prefijos</div><h1>Pasapalabra MSO</h1><p class="sub">Responde la pista de cada letra. Si no la sabes, pulsa Pasapalabra y vuelve al final.</p></div>
+ <div class="stats"><span class="chip time">⏱ <b id="t">10:00</b></span><span class="chip ok">Aciertos <b id="nok">0</b></span><span class="chip bad">Fallos <b id="nbad">0</b></span><span class="chip">Quedan <b id="nleft">27</b></span></div>
+</header>
+<div class="game">
+ <div class="rosco" id="rosco"><div class="center"><div class="mode" id="mode">Empieza por</div><div class="big" id="big">A</div></div></div>
+ <div class="panel" id="panel">
+  <div class="eyebrow" id="lab">Letra A · Empieza por A</div>
+  <p class="clue" id="clue"></p>
+  <form id="f" autocomplete="off"><input id="ans" placeholder="Escribe tu respuesta" aria-label="Respuesta"><button class="b go" type="submit">Responder</button><button class="b skip" type="button" id="pp">Pasapalabra</button></form>
+  <div class="fb pass noimg" id="fb"><div><div class="res">Primera pista</div><div class="ans" style="font-size:18px;font-weight:600;font-family:var(--body)">Al acertar o fallar verás aquí la respuesta.</div></div></div>
+  <div class="row"><button class="b ghost" type="button" id="reset">Empezar de nuevo</button><button class="b ghost" type="button" id="solbtn">Ver soluciones</button></div>
+  <div id="sol" class="sol" hidden></div>
+ </div>
+</div>
+</div>
+<script>
+const D=[{"l": "A", "m": "E", "q": "Marca de tubos LED inalámbricos muy populares en los sets de rodaje profesionales.", "a": "Astera", "ok": ["astera"], "img": null, "w": "Nayara"}, {"l": "B", "m": "E", "q": "Tipo de foco robotizado (cabeza móvil) diseñado para proyectar un haz de luz extremadamente concentrado y potente.", "a": "Beam", "ok": ["beam"], "img": null, "w": "Nayara"}, {"l": "C", "m": "E", "q": "Luz colocada detrás del sujeto que dibuja su silueta y lo separa del fondo.", "a": "Contraluz", "ok": ["contraluz"], "img": null, "w": "Adrián"}, {"l": "D", "m": "E", "q": "Regulador con el que se sube o se baja la intensidad de un foco.", "a": "Dimmer", "ok": ["dimmer", "dimer"], "img": null, "w": "Adrián"}, {"l": "E", "m": "E", "q": "Sonido en dos canales, izquierdo y derecho, que puede viajar por un solo jack TRS.", "a": "Estéreo", "ok": ["estereo"], "img": null, "w": "Maday"}, {"l": "F", "m": "E", "q": "Foco con una lente de anillos escalonados delante de la lámpara que permite abrir o cerrar el haz de luz (flood/spot).", "a": "Fresnel", "ok": ["fresnel"], "img": null, "w": "Adrián"}, {"l": "G", "m": "E", "q": "Prefijo que equivale a 1.000.000.000 (mil millones).", "a": "Giga", "ok": ["giga"], "img": null, "w": "Iván"}, {"l": "H", "m": "E", "q": "Interfaz multimedia que transmite audio y vídeo digital por un solo cable.", "a": "HDMI", "ok": ["hdmi"], "img": null, "w": "Maday"}, {"l": "I", "m": "C", "q": "Tela o papel que se pone delante del foco para suavizar la luz y que las sombras sean menos duras.", "a": "Difusor", "ok": ["difusor", "difusores"], "img": null, "w": "Adrián"}, {"l": "J", "m": "E", "q": "Así se conoce al clásico foco Fresnel de 2000 W (2K), muy usado en platós de cine.", "a": "Junior", "ok": ["junior"], "img": null, "w": "Adrián"}, {"l": "K", "m": "E", "q": "Prefijo que equivale a 1.000 unidades.", "a": "Kilo", "ok": ["kilo"], "img": null, "w": "Iván"}, {"l": "L", "m": "E", "q": "Tecnología de foco con diodos, de bajo consumo, que apenas se calienta.", "a": "LED", "ok": ["led"], "img": null, "w": "Adrián"}, {"l": "M", "m": "E", "q": "Prefijo que equivale a un millón de unidades.", "a": "Mega", "ok": ["mega"], "img": null, "w": "Iván"}, {"l": "N", "m": "C", "q": "Prefijo que equivale a una milmillonésima parte de una unidad.", "a": "Nano", "ok": ["nano"], "img": null, "w": "Iván"}, {"l": "Ñ", "m": "C", "q": "Pieza pequeña que hay que pulsar para soltar un conector XLR o un RJ45.", "a": "Pestaña", "ok": ["pestaña", "pestañadebloqueo"], "img": null, "w": "Maday"}, {"l": "O", "m": "C", "q": "Tipo de foco robotizado (cabeza móvil) clásico, junto con el Wash y el Beam, especializado en proyección nítida.", "a": "Spot", "ok": ["spot"], "img": null, "w": "Nayara"}, {"l": "P", "m": "E", "q": "Fuentes matriciales difusas de luz suave, de las cuales el modelo SkyPanel es un referente en la industria.", "a": "Paneles", "ok": ["paneles", "panel", "panelesdeluzsuave", "paneldeluzsuave", "panelesled"], "img": null, "w": "Nayara"}, {"l": "Q", "m": "C", "q": "Adhesivo que se pone en los extremos de un cable para saber qué canal o equipo lleva.", "a": "Etiqueta", "ok": ["etiqueta", "etiquetas"], "img": null, "w": "Maday"}, {"l": "R", "m": "C", "q": "Prefijo que equivale a una millonésima parte de una unidad; su símbolo es µ.", "a": "Micro", "ok": ["micro"], "img": null, "w": "Iván"}, {"l": "S", "m": "E", "q": "Caja de tela que se coloca delante de un foco para convertir su luz en una luz suave y envolvente.", "a": "Softbox", "ok": ["softbox", "softboxes"], "img": null, "w": "Añadida"}, {"l": "T", "m": "E", "q": "Prefijo que representa un millón de millones.", "a": "Tera", "ok": ["tera"], "img": null, "w": "Iván"}, {"l": "U", "m": "C", "q": "Tecnología de iluminación tradicional basada en la incandescencia por filamento, con una temperatura de color de 3200 K.", "a": "Tungsteno-halógeno", "ok": ["tungstenohalogeno", "tungsteno", "halogeno"], "img": null, "w": "Nayara"}, {"l": "V", "m": "C", "q": "Denominación en inglés de las cabezas móviles electromecánicas.", "a": "Moving heads", "ok": ["movingheads", "movinghead"], "img": null, "w": "Nayara"}, {"l": "W", "m": "E", "q": "Tipo de cabeza móvil que baña de luz una zona amplia de forma uniforme, al contrario que el Beam.", "a": "Wash", "ok": ["wash"], "img": null, "w": "Añadida"}, {"l": "X", "m": "E", "q": "Conector de audio muy utilizado en micrófonos y conexiones balanceadas; también se conoce como Cannon.", "a": "XLR", "ok": ["xlr", "cannon", "canon"], "img": null, "w": "Maday"}, {"l": "Y", "m": "E", "q": "Señal de luminancia que, junto con Pb y Pr, forma el vídeo por componentes.", "a": "Y", "ok": ["y"], "img": null, "w": "Maday"}, {"l": "Z", "m": "C", "q": "Tipo de cable que puede utilizarse para transportar vídeo compuesto a largas distancias.", "a": "Coaxial", "ok": ["coaxial"], "img": null, "w": "Maday"}], IMG={};
+const $=id=>document.getElementById(id);
+let st,cur,left,timer,running;
+function norm(s){return s.toLowerCase().replace(/ñ/g,"#").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/#/g,"ñ").replace(/[^a-z0-9ñ]/g,"")}
+function build(){const r=$("rosco");r.querySelectorAll(".d").forEach(e=>e.remove());D.forEach((x,i)=>{const a=(-90+i*360/D.length)*Math.PI/180;const b=document.createElement("button");b.className="d";b.type="button";b.textContent=x.l;b.style.left=(50+43*Math.cos(a))+"%";b.style.top=(50+43*Math.sin(a))+"%";b.setAttribute("aria-label","Letra "+x.l);b.onclick=()=>{if(st[i]==="p"){cur=i;show()}};r.appendChild(b)})}
+function reset(){st=D.map(()=>"p");cur=0;left=600;running=false;clearInterval(timer);build();setFb("pass","Primera pista","Al acertar o fallar verás aquí la respuesta.",null,true);show();tick()}
+function tick(){const m=Math.floor(left/60),s=left%60;$("t").textContent=m+":"+String(s).padStart(2,"0")}
+function start(){if(running)return;running=true;timer=setInterval(()=>{left--;tick();if(left<=0){finish(true)}},1000)}
+function show(){const x=D[cur];document.querySelectorAll(".d").forEach((e,i)=>{e.className="d"+(st[i]==="ok"?" ok":st[i]==="bad"?" bad":"")+(i===cur&&st[i]==="p"?" cur":"")});
+ const mode=x.m==="E"?"Empieza por":"Contiene la";$("mode").textContent=mode;$("big").textContent=x.l;$("lab").textContent="Letra "+x.l+" · "+mode+" "+x.l+(x.w?" · Pregunta de "+x.w:"");$("clue").textContent=x.q;
+ $("nok").textContent=st.filter(s=>s==="ok").length;$("nbad").textContent=st.filter(s=>s==="bad").length;$("nleft").textContent=st.filter(s=>s==="p").length;$("ans").value="";}
+function setFb(cls,res,ans,img,small){const fb=$("fb");fb.className="fb "+cls+(img?"":" noimg");fb.innerHTML=(img?'<div class="tile">'+IMG[img]+'</div>':'')+'<div><div class="res">'+res+'</div><div class="ans"'+(small?' style="font-size:18px;font-weight:600;font-family:var(--body)"':'')+'>'+ans+'</div></div>'}
+function next(){const n=D.length;for(let k=1;k<=n;k++){const j=(cur+k)%n;if(st[j]==="p"){cur=j;show();return}}finish(false)}
+function answer(v){start();const x=D[cur];if(!norm(v))return;const good=x.ok.includes(norm(v));st[cur]=good?"ok":"bad";
+ setFb(good?"ok":"bad",(good?"¡Correcto! ":"Fallo · ")+"Letra "+x.l,x.a,x.img);next()}
+function finish(timeout){clearInterval(timer);running=false;document.querySelectorAll(".d").forEach((e,i)=>e.className="d"+(st[i]==="ok"?" ok":st[i]==="bad"?" bad":""));
+ const ok=st.filter(s=>s==="ok").length;$("clue").innerHTML='<span class="end"><h2>'+(timeout?"¡Tiempo!":"Rosco terminado")+'</h2><span>'+ok+' aciertos de '+D.length+'. Pulsa «Ver soluciones» para repasar.</span></span>';$("lab").textContent="Fin de la partida";$("big").textContent=ok;$("mode").textContent="Aciertos";}
+$("f").addEventListener("submit",e=>{e.preventDefault();if(!running&&st.every(s=>s!=="p"))return;answer($("ans").value);$("ans").focus()});
+$("pp").onclick=()=>{if(st.every(s=>s!=="p"))return;start();setFb("pass","Pasapalabra","Volverás a la "+D[cur].l+" al final de la vuelta.",null,true);next()};
+$("reset").onclick=reset;
+$("sol").innerHTML=D.map(x=>'<span><b>'+x.l+'</b>'+x.a+'</span>').join("");
+$("solbtn").onclick=()=>{const s=$("sol");s.hidden=!s.hidden;$("solbtn").textContent=s.hidden?"Ver soluciones":"Ocultar soluciones"};
+reset();
+</script>
+</body>
+</html>
